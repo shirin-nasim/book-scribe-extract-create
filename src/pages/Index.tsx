@@ -5,6 +5,7 @@ import PdfUploader from '@/components/PdfUploader';
 import PdfViewer from '@/components/PdfViewer';
 import TextExtractor from '@/components/TextExtractor';
 import PdfEditor from '@/components/PdfEditor';
+import SelectionMode from '@/components/SelectionMode';
 import { toast } from 'sonner';
 import { 
   extractTextFromPdf, 
@@ -21,6 +22,7 @@ const Index = () => {
   const [extractedText, setExtractedText] = useState('');
   const [isExtracting, setIsExtracting] = useState(false);
   const [isCreatingPdf, setIsCreatingPdf] = useState(false);
+  const [numPages, setNumPages] = useState<number | null>(null);
 
   const handlePdfSelected = (file: File) => {
     setPdfFile(file);
@@ -40,6 +42,14 @@ const Index = () => {
         return [...prev, pageNum];
       }
     });
+  };
+
+  const handleSelectPages = (pages: number[]) => {
+    setSelectedPages(pages);
+  };
+
+  const handleDocumentLoaded = (numPages: number) => {
+    setNumPages(numPages);
   };
 
   const handleExtractText = async () => {
@@ -117,6 +127,13 @@ const Index = () => {
         {currentStep === 2 && pdfFile && (
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">Extract Content</h2>
+            
+            {/* Selection mode for pages */}
+            <SelectionMode 
+              numPages={numPages} 
+              onSelectPages={handleSelectPages} 
+            />
+            
             <PdfViewer 
               file={pdfFile} 
               selectedPages={selectedPages} 
@@ -145,6 +162,13 @@ const Index = () => {
         {currentStep === 3 && pdfFile && (
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">Create & Export</h2>
+            
+            {/* Selection mode for pages */}
+            <SelectionMode 
+              numPages={numPages} 
+              onSelectPages={handleSelectPages} 
+            />
+            
             {/* Allow viewing and selecting pages even in export step */}
             <PdfViewer 
               file={pdfFile} 
